@@ -1,4 +1,4 @@
-all: nt unix vms test
+all: nt unix vms analyzer test
 
 vms: data/languages/21064VMS.sla data/languages/21164VMS.sla data/languages/21264VMS.sla data/languages/21364VMS.sla
 unix: data/languages/21064UNIX.sla data/languages/21164UNIX.sla data/languages/21264UNIX.sla data/languages/21364UNIX.sla
@@ -37,6 +37,21 @@ SLEIGH ?= sleigh
 test:
 	make -C tests
 
+# Java analyzer (gp-relative reference recovery). Compiled against the jars of
+# an installed Ghidra and packaged as lib/Alpha.jar, which Ghidra discovers
+# automatically for this processor module.
+GHIDRA_DIR ?= /usr/share/ghidra
+GHIDRA_CP = $(shell find $(GHIDRA_DIR)/Ghidra -name '*.jar' | tr '\n' ':')
+ANALYZER_SRC = src/main/java/ghidra/app/plugin/core/analysis/AlphaAddressAnalyzer.java
+
+analyzer: lib/Alpha.jar
+
+lib/Alpha.jar: $(ANALYZER_SRC)
+	rm -rf build/classes
+	mkdir -p build/classes lib
+	javac -cp "$(GHIDRA_CP)" -d build/classes $(ANALYZER_SRC)
+	jar cf $@ -C build/classes .
+
 clean:
-	rm -rf data/languages/*.sla
+	rm -rf data/languages/*.sla build lib/Alpha.jar
 	make -C tests clean

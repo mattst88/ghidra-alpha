@@ -6,3 +6,5 @@ core.*
 *.outNT
 *.outUNIX
 *.outVMS
+/build/
+/lib/
