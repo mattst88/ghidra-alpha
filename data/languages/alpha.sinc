@@ -855,9 +855,10 @@ define pcodeop hw_mtpr;
 :AMASK op, Rc_lhs is opcode=0x11 & ofunc=0x61 & op & Rc_lhs { Rc_lhs = op; }
 
 # PAL
+define pcodeop halt;
 define pcodeop drain_aborts;
 define pcodeop instruction_memory_barrier;
-:HALT           is opcode=0x00 & pcode=0    { nop(); }
+:HALT           is opcode=0x00 & pcode=0    { halt(); return [0:8]; }
 :DRAINA         is opcode=0x00 & pcode=2    { drain_aborts(); }
 :IMB            is opcode=0x00 & pcode=0x86 { instruction_memory_barrier(); }
 # 4.1.5 Exceptions Address Register (EXC_ADDR)
